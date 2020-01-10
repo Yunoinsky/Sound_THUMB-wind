@@ -52,3 +52,5 @@ build
 res
 
 db
+
+.xmake
