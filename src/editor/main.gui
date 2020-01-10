@@ -25,8 +25,10 @@ struct {
 
 struct {
   Rectangle bounds;
+  char * text;
 } StatusBar = {
-	       .bounds = { 0, 620, 800, 20}
+	       .bounds = { 0, 620, 800, 20},
+	       .text = "OK"
 };
 
 struct {

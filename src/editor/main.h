@@ -2,7 +2,9 @@
 #define __EDITOR_MAIN_H__
 
 #include "../scoreio/score.h"
+#include "../audio/sound.h"
 #include "../others/raylib.h"
+
 #define RAYGUI_IMPLEMENTATION
 #include "../others/raygui.h"
 

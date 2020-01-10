@@ -1,32 +1,30 @@
 #include "main.h"
 #include "main.gui"
 
+#define STATE_FILELOADED        (1 << 0)
+#define STATE_PLAY              (1 << 1)
+
+unsigned char state;
 
 inline void game_init() {
   InitWindow(screenWidth, screenHeight, title);
-  InitAudioDevice();
-  
+  const char* sound_url = "music_1.mp3";
+  audio_init();
+  sound_load_song(sound_url);
   SetTargetFPS(60);
 }
 
 inline void game_update() {
   mousePosition = GetMousePosition();
+
 }
-int m = 0;
-int f = 0;
-bool x;
-char str[40];
+
 inline void game_draw() {
   BeginDrawing(); {
     ClearBackground(RAYWHITE);
-    /***
     type_togglegroup.active = GuiToggleGroup(type_togglegroup.bounds, type_togglegroup.text, type_togglegroup.active);
-    for (unsigned int i = 0; i < 3; i ++) {
-      GuiGroupBox(GroupBox[i].bounds, GroupBox[i].text);
-    }
-    GuiStatusBar(StatusBar.bounds, "OK");
-    ***/
-    GuiGrid((Rectangle){ 80, 80, 300, 300 }, 50, 2);
+    for (unsigned int i = 0; i < 3; i ++) GuiGroupBox(GroupBox[i].bounds, GroupBox[i].text);
+    GuiStatusBar(StatusBar.bounds, StatusBar.text);
   } EndDrawing();
 }
 
