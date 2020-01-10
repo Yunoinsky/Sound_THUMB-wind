@@ -1,0 +1,47 @@
+struct {
+  Rectangle bounds;
+  const char* text;
+} GroupBox[3] = {
+		 {
+		  .bounds = { 520, 20, 260, 346 },
+		  .text = "MODE"
+		 },
+		 {
+		  .bounds = { 20, 20, 480, 440},
+		  .text = "SCORE"
+		 },
+		 {
+		  .bounds = { 20 ,480, 760 ,120 },
+		  .text = "CURSOR"
+		 }
+};
+
+struct {
+  Rectangle bounds;
+  const char* text;
+} DropDown[3] = {
+		 
+};
+
+struct {
+  Rectangle bounds;
+} StatusBar = {
+	       .bounds = { 0, 620, 800, 20}
+};
+
+struct {
+  Rectangle bounds;
+  const char * text;
+  int active;
+} type_togglegroup = {
+		      
+		      .bounds = { 521, 382, 50, 38 },
+		      .text = "Select;Move;Click;Slip;Hold\nDrag;Pass;End;Fun;Save",
+		      .active = 0
+};
+
+
+
+		
+
+
