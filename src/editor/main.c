@@ -154,7 +154,7 @@ void game_update() {
     playbutton_action();
 
     if (!(state & STATE_PLAY)) {
-      
+      if 
 
       
     }
