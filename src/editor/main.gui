@@ -1,5 +1,19 @@
 struct {
   Rectangle bounds;
+  const char* wintitle;
+  char text[32];
+  const char* buttons;
+  int ret;
+} DragFileWindow = {
+		    .bounds = { 250, 220, 300, 200 },
+		    .wintitle = "Open Audio File",
+		    .text = "Drag your audio file here.",
+		    .buttons = "Confirm;Cancel",
+		    .ret = -1
+};
+
+struct {
+  Rectangle bounds;
   const char* text;
 } GroupBox[3] = {
 		 {
@@ -11,7 +25,7 @@ struct {
 		  .text = "SCORE"
 		 },
 		 {
-		  .bounds = { 20 ,480, 760 ,120 },
+		  .bounds = { 20 ,480, 760 ,90 },
 		  .text = "CURSOR"
 		 }
 };
@@ -25,9 +39,9 @@ struct {
 
 struct {
   Rectangle bounds;
-  char * text;
+  char text [128];
 } StatusBar = {
-	       .bounds = { 0, 620, 800, 20},
+	       .bounds = { 0, 580, 800, 20},
 	       .text = "OK"
 };
 
@@ -35,15 +49,133 @@ struct {
   Rectangle bounds;
   const char * text;
   int active;
-} type_togglegroup = {
+} ModeToggle = {
 		      
-		      .bounds = { 521, 382, 50, 38 },
-		      .text = "Select;Move;Click;Slip;Hold\nDrag;Pass;End;Fun;Save",
-		      .active = 0
+		.bounds = { 521, 382, 50, 38 },
+		.text = "Select;Move;Click;Slip;Hold\nDrag;Pass;End;Fun;Save",
+		.active = 0
+};
+
+struct {
+  Rectangle bounds;
+  const char * text;
+  int active;
+  bool able;
+} TypeCombo[2] = {  {
+		     .bounds = { 550, 50, 200, 38 },
+		     .text = "Click;Slip;Hold;Drag;Pass;End;Fun",
+		     .active = 0,
+		     .able = true
+		  },{
+		     .bounds = { 550, 200, 200, 38 },
+		     .text = "Left;Middle;Right",
+		     .active = 1,
+		     .able = true
+		     }
+		    
+};
+
+struct {
+  Rectangle bounds;
+  const char *text;
+  int value;
+  int sequencelength;
+  bool editMode;
+} TimeSpinner[2] = {
+		    {
+		     .bounds = { 580, 100, 170, 38 },
+		     .text = "Time(20ms)",
+		     .value = 0,
+		     .sequencelength = 0,
+		     .editMode = false
+		    },
+		    {
+		     .bounds = { 580, 150, 170, 38 },
+		     .text = "Track",
+		     .value = 0,
+		     .sequencelength = 6,
+		     .editMode = false
+		    }
 };
 
 
+struct {
+  Rectangle bounds;
+  char * text;
+  bool value;
+} Buttons[8] = {
 
-		
+     
+     {
+      .bounds = { 550, 250, 200, 38 },
+      .text = "Confirm",
+      .value = 0
+     },  // 0
+     
+     
+     {
+      .bounds = { 550, 300, 95, 38 },
+      .text = "Cancel",
+      .value = 0
+     },  // 1
+     {
+      .bounds = { 655, 300, 95, 38 },
+      .text = "Delete",
+      .value = 0
+     },  // 2
 
 
+     {
+      .bounds = { 300, 530, 28, 26 },
+      .text = "#3#",         // Open new file
+      .value = 0,
+     },  // 3
+     
+     {
+      .bounds = { 350, 530, 28, 26 },
+      .text = "#118#",       // back
+      .value = 0,
+     },  // 4
+     {
+      .bounds = { 381, 530, 28, 26 },
+      .text = "#131#",       // play / pause
+      .value = 0,
+     },  // 5
+     {
+      .bounds = { 412, 530, 28, 26 },
+      .text = "#119#",       // forth
+      .value = 0,
+     },  // 6
+     {
+      .bounds = { 460, 530, 28, 26 },
+      .text = "#133#",       // stop
+      .value = 0,      
+     }
+};
+
+struct {
+  Rectangle bounds;
+  int resolution; // rmschunk/pixel
+} scrollscore = {
+		 .bounds = { 20, 40, 480, 420 },
+		 .resolution = 1
+};
+
+
+struct {
+  Rectangle bounds;
+  float value;
+  float min;
+  float max;
+} playbar = {
+	     .bounds = { 70, 500, 640, 20 },
+	     .value = 0,
+	     .min = 0,
+	     .max = 0,
+};
+
+struct {
+  Rectangle bounds;
+} namelabel = {
+	       .bounds = { 70, 530, 300, 20 },
+};

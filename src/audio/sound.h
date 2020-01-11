@@ -4,16 +4,27 @@
 #include "../others/raylib.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define SAMPLE_RATE 44100
-#define SAMPLE_SIZE    32
-#define CHANNELS        2
-
-AudioStream stream;
 Sound sound;
+float * rms_data;
 
-void audio_init();
+bool soundloaded;
+int rms_length;
+
+void calc_rms(float * rawdata);
+float get_rms(int chunk);
+int get_rms_length();
 void sound_load_song(const char* sound_url);
+void sound_unload();
+int get_song_length();
+int get_cursor_time();
+void set_cursor_time(int tar_time);
+void resume_song();
+void play_song();
+void pause_song();
+void stop_song();
+
 bool is_music_file(const char* filename);
 
 #endif

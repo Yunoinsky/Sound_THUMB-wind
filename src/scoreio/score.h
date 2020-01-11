@@ -60,11 +60,15 @@ void UndoCommand();
 static const char head[5] = "THUMB";
 void write_score_file(const char* filename);
 
+void read_score_file(const char* filename);
+
 void DoneCommand(unsigned char track, signed char command_type, Note note);
 
 void Undocommand();
 
 void init_score_list();
+
+void clear_score_list();
 
 Note create_click_note(unsigned int time);
 

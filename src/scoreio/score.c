@@ -90,8 +90,21 @@ void init_score_list() {
     Notelists[i]->next = NULL;
   }
   historylist = (HistoryCommandNode*)malloc(sizeof(HistoryCommandNode));
-  
 }
+
+void clear_score_list() {
+  NoteNode* cur;
+  NoteNode* temp;
+  for (unsigned int i = 0; i < TRACK_NUM; i++) {
+    cur = Notelists[i];
+    while (cur->next != NULL) {
+      temp = cur->next;
+      cur->next = cur->next->next;
+      free(temp);
+    }
+  }
+}
+
 
 Note create_click_note(unsigned int time) {
   return (Note){ CLK_NOTE, time, NOTE_MEDIUM };
