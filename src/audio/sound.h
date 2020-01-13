@@ -12,6 +12,8 @@ float * rms_data;
 bool soundloaded;
 int rms_length;
 
+#define CHUNK_SIZE   5
+
 void calc_rms(float * rawdata);
 float get_rms(int chunk);
 int get_rms_length();

@@ -1,26 +1,27 @@
 #include "sound.h"
 
+
 void calc_rms(float * rawdata) {
   // 20 ms / rmschunk
-  int chunksize = sound.stream.sampleRate / 50 * sound.stream.channels;
+  int chunkframe = sound.stream.sampleRate / (1000 / CHUNK_SIZE) * sound.stream.channels;
   float total = 0;
-  int len = sound.sampleCount / chunksize + 1;
+  int len = sound.sampleCount / chunkframe + 1;
   rms_length = len;
   int i = 0;
   int j;
   rms_data = (float *)malloc(sizeof(float)*len);
   while (i < len - 1) {
-    for (j = 0; j < chunksize; j++) {
-      total += (rawdata[i * chunksize + j] * rawdata[i * chunksize + j]);
+    for (j = 0; j < chunkframe; j++) {
+      total += (rawdata[i * chunkframe + j] * rawdata[i * chunkframe + j]);
     }
-    rms_data[i] = sqrtf(total / chunksize);
+    rms_data[i] = sqrtf(total / chunkframe);
     i++;
     total = 0;
   }
-  int restdatanum = sound.sampleCount - (i - 1) * chunksize;
+  int restdatanum = sound.sampleCount - (i - 1) * chunkframe;
   
   for (j = 0; j < restdatanum; j ++) {
-    total += (rawdata[i * chunksize + j] * rawdata[i * chunksize + j]);
+    total += (rawdata[i * chunkframe + j] * rawdata[i * chunkframe + j]);
   }
   rms_data[i] = sqrtf(total / restdatanum);
 }

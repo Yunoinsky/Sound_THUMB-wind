@@ -60,17 +60,17 @@ struct {
   Rectangle bounds;
   const char * text;
   int active;
-  bool able;
+
 } TypeCombo[2] = {  {
 		     .bounds = { 550, 50, 200, 38 },
 		     .text = "Click;Slip;Hold;Drag;Pass;End;Fun",
 		     .active = 0,
-		     .able = true
+
 		  },{
 		     .bounds = { 550, 200, 200, 38 },
 		     .text = "Left;Middle;Right",
 		     .active = 1,
-		     .able = true
+
 		     }
 		    
 };
@@ -84,7 +84,7 @@ struct {
 } TimeSpinner[2] = {
 		    {
 		     .bounds = { 580, 100, 170, 38 },
-		     .text = "Time(20ms)",
+		     .text = "Time(ms)",
 		     .value = 0,
 		     .sequencelength = 0,
 		     .editMode = false
@@ -104,15 +104,12 @@ struct {
   char * text;
   bool value;
 } Buttons[8] = {
-
      
      {
       .bounds = { 550, 250, 200, 38 },
       .text = "Confirm",
       .value = 0
      },  // 0
-     
-     
      {
       .bounds = { 550, 300, 95, 38 },
       .text = "Cancel",

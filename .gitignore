@@ -48,6 +48,8 @@
 .tmp_versions/
 *.o
 
+.#*
+
 build
 res
 

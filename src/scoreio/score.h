@@ -19,7 +19,7 @@ typedef struct Note {
 		
 		 FUN_NODE  } type;   // function note
   unsigned int time;
-  signed char direction;
+  unsigned char direction;
 } Note;
 
 typedef struct NoteNode {
@@ -27,7 +27,7 @@ typedef struct NoteNode {
   struct NoteNode* next;
 } NoteNode;
 
-static NoteNode* Notelists[TRACK_NUM] = { 0 };
+NoteNode* Notelists[TRACK_NUM];
 
 typedef struct HistoryCommandNode {
   enum CommandType {
@@ -45,24 +45,25 @@ static unsigned short historystackdepth  = 0; // The depth of history stack must
 HistoryCommandNode *historylist;
 HistoryCommandNode *historytail;
 
-void DoneCommand(unsigned char track, signed char command_type, Note note);
+void DoneCommand(unsigned char track, unsigned char command_type, Note note);
 void UndoCommand();
 
 
-#define NOTE_LEFT       -1
-#define NOTE_MEDIUM      0
-#define NOTE_RIGHT       1
+#define NOTE_LEFT        0
+#define NOTE_MEDIUM      1
+#define NOTE_RIGHT       2
 
 #define NOTE_DISABLE     0
 #define NOTE_ENABLE      1
 #define NOTE_CADENZA     2
+#define NOTE_ENDCADENZA  3
 
 static const char head[5] = "THUMB";
 void write_score_file(const char* filename);
 
 void read_score_file(const char* filename);
 
-void DoneCommand(unsigned char track, signed char command_type, Note note);
+void DoneCommand(unsigned char track, unsigned char command_type, Note note);
 
 void Undocommand();
 
@@ -72,24 +73,24 @@ void clear_score_list();
 
 Note create_click_note(unsigned int time);
 
-Note create_slip_node(unsigned int time, signed char direction);
+Note create_slip_node(unsigned int time, unsigned char direction);
 
-Note create_start_hold_node(unsigned int time, signed char direction);
+Note create_start_hold_node(unsigned int time);
 
-Note create_start_drag_node(unsigned int time, signed char direction);
+Note create_start_drag_node(unsigned int time, unsigned char direction);
 
-Note create_passing_drag_node(unsigned int time, signed char direction);
+Note create_passing_drag_node(unsigned int time, unsigned char direction);
 
 Note create_end_node(unsigned int time);
 
-Note create_fun_node(unsigned int time, signed char fun);
+Note create_fun_node(unsigned int time, unsigned char fun);
 
 NoteNode* create_note_node(Note note, NoteNode* next);
 
-#define MIN_NOTE_DIST 20
+#define MIN_NOTE_DIST 120
 bool insert_note(unsigned char track, Note note, bool inundo);
 
-Note* get_note(unsigned char track, unsigned int time);
+NoteNode* get_notenode(unsigned char track, unsigned int time);
 
 bool remove_note(unsigned char track, unsigned int time, bool inundo);
 

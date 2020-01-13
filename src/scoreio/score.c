@@ -48,7 +48,7 @@ void read_score_file(const char* filename) {
   }
 }
 
-void DoneCommand(unsigned char track, signed char command_type, Note note) {
+void DoneCommand(unsigned char track, unsigned char command_type, Note note) {
   historystackdepth++;
   HistoryCommandNode* command = (HistoryCommandNode*)malloc(sizeof(HistoryCommandNode));
   command->note = note;
@@ -56,13 +56,18 @@ void DoneCommand(unsigned char track, signed char command_type, Note note) {
   command->track = track;
   command->prev = historylist;
   command->next = historylist->next;
-  if (historylist->next) historylist->next->prev = command;
+  if (historylist->next != NULL) {
+    historylist->next->prev = command;
+  }
   else historytail = command;
+
   historylist->next = command;
 
   if (historystackdepth > HISTORYDEPTH) {
     historytail = historytail->prev;
+    
     free(historytail->next);
+
     historytail->next = NULL;
   }
 }
@@ -90,6 +95,11 @@ void init_score_list() {
     Notelists[i]->next = NULL;
   }
   historylist = (HistoryCommandNode*)malloc(sizeof(HistoryCommandNode));
+  historylist->next=NULL;
+  historylist->prev=NULL;
+  historylist->note=(Note){0,0,0};
+  historylist->track=0;
+  historylist->type=0;
 }
 
 void clear_score_list() {
@@ -103,6 +113,17 @@ void clear_score_list() {
       free(temp);
     }
   }
+  while (historylist->next != NULL) {
+    if (historylist->next->next != NULL) {
+      historylist->next = historylist->next->next;
+      free(historylist->next->prev);
+      historylist->next->prev=historylist;
+    } else {
+      free(historylist->next);
+      historylist->next = NULL;       
+    }
+  }
+
 }
 
 
@@ -110,19 +131,19 @@ Note create_click_note(unsigned int time) {
   return (Note){ CLK_NOTE, time, NOTE_MEDIUM };
 }
 
-Note create_slip_node(unsigned int time, signed char direction) {
+Note create_slip_node(unsigned int time, unsigned char direction) {
   return (Note){ SLP_NOTE, time, direction };
 }
 
-Note create_start_hold_node(unsigned int time, signed char direction) {
-  return (Note){ SHD_NOTE, time, direction };
+Note create_start_hold_node(unsigned int time) {
+  return (Note){ SHD_NOTE, time, NOTE_MEDIUM };
 }
 
-Note create_start_drag_node(unsigned int time, signed char direction) {
+Note create_start_drag_node(unsigned int time, unsigned char direction) {
   return (Note){ SDG_NOTE, time, direction };
 }
 
-Note create_passing_drag_node(unsigned int time, signed char direction) {
+Note create_passing_drag_node(unsigned int time, unsigned char direction) {
   return (Note){ PDG_NOTE, time, direction };
 }
 
@@ -130,7 +151,7 @@ Note create_end_node(unsigned int time) {
   return (Note){ END_NOTE, time, NOTE_MEDIUM };
 }
 
-Note create_fun_node(unsigned int time, signed char fun) {
+Note create_fun_node(unsigned int time, unsigned char fun) {
   return (Note){ FUN_NODE, time, fun };
 }
 
@@ -140,6 +161,7 @@ NoteNode* create_note_node(Note note, NoteNode* next) {
   notenode->next = next;
   return notenode;
 }
+
 
 bool insert_note(unsigned char track, Note note, bool inundo) {
   NoteNode* cur = Notelists[track];

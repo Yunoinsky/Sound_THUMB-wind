@@ -7,6 +7,15 @@
   if (__v < __min_v) __v = __min_v;		\
   else if (__v > __max_v) __v = __max_v;
 
+#define limit_num(__v, __min_v, __max_v)        \
+  ((__v < __min_v)? __min_v:((__v > __max_v)?__max_v:__v))
+
+#define max(__a,__b) (__a > __b ? __a : __b)
+
+#define min(__a,__b) (__a < __b ? __a : __b)
+
+
+
 inline bool loop_acc(int *timer, int step, int limit) {
   *timer += step;
   if (*timer > limit) {
@@ -15,6 +24,7 @@ inline bool loop_acc(int *timer, int step, int limit) {
   }
   return false;
 }
+
 
 
 #endif
