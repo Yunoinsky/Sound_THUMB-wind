@@ -1,27 +1,46 @@
 #include "sound.h"
 
 
-void calc_rms(float * rawdata) {
+void calc_rms(Wave wave) {
   // 20 ms / rmschunk
+
   int chunkframe = sound.stream.sampleRate / (1000 / CHUNK_SIZE) * sound.stream.channels;
+
   float total = 0;
   int len = sound.sampleCount / chunkframe + 1;
   rms_length = len;
   int i = 0;
   int j;
   rms_data = (float *)malloc(sizeof(float)*len);
+  float rawdata = 0;
+
   while (i < len - 1) {
     for (j = 0; j < chunkframe; j++) {
-      total += (rawdata[i * chunkframe + j] * rawdata[i * chunkframe + j]);
+      if (wave.sampleSize == 8) {
+	rawdata = (float)(((unsigned char*)wave.data)[i*chunkframe+j] - 127)/256.0f;
+      } else if (wave.sampleSize == 16) {
+	rawdata = (float)((short *)wave.data)[i*chunkframe + j]/32767.0f;
+      } else if (wave.sampleSize == 32) {
+	rawdata = ((float *)wave.data)[i*chunkframe + j];
+      }
+      total += rawdata * rawdata;
     }
     rms_data[i] = sqrtf(total / chunkframe);
     i++;
     total = 0;
   }
+
   int restdatanum = sound.sampleCount - (i - 1) * chunkframe;
   
   for (j = 0; j < restdatanum; j ++) {
-    total += (rawdata[i * chunkframe + j] * rawdata[i * chunkframe + j]);
+    if (wave.sampleSize == 8) {
+      rawdata = (float)(((unsigned char*)wave.data)[i*chunkframe+j] - 127)/256.0f;
+    } else if (wave.sampleSize == 16) {
+      rawdata = (float)((short *)wave.data)[i*chunkframe + j]/32767.0f;
+    } else if (wave.sampleSize == 32) {
+      rawdata = ((float *)wave.data)[i*chunkframe + j];
+    }
+      total += rawdata * rawdata;
   }
   rms_data[i] = sqrtf(total / restdatanum);
 }
@@ -39,7 +58,7 @@ int get_rms_length() {
 void sound_load_song(const char* sound_url) {
   Wave wave = LoadWave(sound_url);
   sound = LoadSoundFromWave(wave);
-  calc_rms(GetWaveData(wave));
+  calc_rms(wave);
   UnloadWave(wave);
   soundloaded = true;
 }

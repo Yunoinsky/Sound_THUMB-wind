@@ -14,7 +14,7 @@ int rms_length;
 
 #define CHUNK_SIZE   5
 
-void calc_rms(float * rawdata);
+void calc_rms(Wave wave);
 float get_rms(int chunk);
 int get_rms_length();
 void sound_load_song(const char* sound_url);

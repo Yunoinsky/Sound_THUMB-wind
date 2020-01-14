@@ -1,6 +1,10 @@
 #include "main.h"
 #include "main.gui"
 
+
+
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
+
 void cursor_update() {
   limit_value(playbar.value, 0, get_song_length());
   if (playbar.value != cur) {
@@ -54,6 +58,7 @@ void playbutton_action() {
   } else {
     if (IsKeyReleased(KEY_SPACE) || Buttons[5].value == 1) {
       play_song();
+
       set_cursor_time(cur);
       Buttons[5].text = "#132#";
       state |= STATE_PLAY;
@@ -107,8 +112,8 @@ Rectangle get_note_rect(Note note, unsigned char track) {
   int coor = ((int)note.time - cur) / CHUNK_SIZE / scrollscore.resolution;
   coor = scrollscore.bounds.y + scrollscore.bounds.height/2 - coor;
 
-  int bottom = min(coor, scrollscore.bounds.y + scrollscore.bounds.height);
-  int top = max(coor-10, scrollscore.bounds.y);
+  int bottom = yumin(coor, scrollscore.bounds.y + scrollscore.bounds.height);
+  int top = yumax(coor-10, scrollscore.bounds.y);
   return (Rectangle){  scrollscore.bounds.x + track * scrollscore.bounds.width / 6, top, scrollscore.bounds.width/6, bottom - top };
 }
 
@@ -226,9 +231,9 @@ void notes_draw() {
 	case SDG_NOTE:
 	case PDG_NOTE: {
 	  switch (notecur->note.direction) {
-	  case NOTE_LEFT: trackcur = max(0, i-1); break;
+	  case NOTE_LEFT: trackcur = yumax(0, i-1); break;
 	  case NOTE_MEDIUM: trackcur = i; break;
-	  case NOTE_RIGHT: trackcur = min(TRACK_NUM, i+1); break;
+	  case NOTE_RIGHT: trackcur = yumin(TRACK_NUM, i+1); break;
 	  default: break;
 	  }
 	  dragcur = draw_prevstartnote[trackcur];
@@ -364,8 +369,11 @@ void draw_score() {
     }
   }
 
+#ifdef _WIN32
+  BeginScissorMode(scrollscore.bounds.x, scrollscore.bounds.y, scrollscore.bounds.width, scrollscore.bounds.height);
+#elif __APPLE__
   BeginScissorMode(scrollscore.bounds.x * 2, scrollscore.bounds.y * 2 -  screenHeight, scrollscore.bounds.width * 2, scrollscore.bounds.height * 2);    // a trick to avoid scissor bug on high DPI
-
+#endif
   notes_draw();
   mousedraw();
   EndScissorMode();
@@ -503,7 +511,9 @@ void game_update() {
 	  char ** droppedFilenames = GetDroppedFiles(&count);
 	  for (int i = 0; i < count; i++) {
 	    if (is_music_file(droppedFilenames[i])) {
+
 	      sound_load_song(droppedFilenames[i]);
+
 	      strcpy(DragFileWindow.text, TextFormat("%.20s", GetFileNameWithoutExt(droppedFilenames[i])));
 
 	      read_score_file(TextFormat("%s.wind", DragFileWindow.text));
@@ -540,6 +550,7 @@ void game_exit() {
 }
 
 int main (int argc, char ** argv) {
+  
   game_init();
 
   while (!WindowShouldClose()) {

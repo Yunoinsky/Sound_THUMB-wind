@@ -30,12 +30,14 @@ struct {
 		 }
 };
 
+/***
 struct {
   Rectangle bounds;
   const char* text;
 } DropDown[3] = {
 		 
 };
+***/
 
 struct {
   Rectangle bounds;
