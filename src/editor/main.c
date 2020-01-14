@@ -344,7 +344,8 @@ void mousedraw() {
 void draw_score() {
   unsigned int i;
   /*** Score ***/
-  // RMS wave 
+  // RMS wave
+
   DrawRectangleRec(scrollscore.bounds, DARKGREEN);
   // 20 ms / rmschunk
   int rms_start = cur / CHUNK_SIZE - scrollscore.bounds.height/2*scrollscore.resolution;
@@ -363,8 +364,11 @@ void draw_score() {
     }
   }
 
+  BeginScissorMode(scrollscore.bounds.x * 2, scrollscore.bounds.y * 2 -  screenHeight, scrollscore.bounds.width * 2, scrollscore.bounds.height * 2);    // a trick to avoid scissor bug on high DPI
+
   notes_draw();
   mousedraw();
+  EndScissorMode();
   // GridLine 
   DrawLine(scrollscore.bounds.x,
 	   scrollscore.bounds.y+scrollscore.bounds.height/2,
