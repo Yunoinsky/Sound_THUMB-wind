@@ -1,9 +1,7 @@
 #include "main.h"
 #include "main.gui"
 
-
-
-#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
+// #pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
 
 void cursor_update() {
   limit_value(playbar.value, 0, get_song_length());
@@ -395,11 +393,21 @@ void draw_score() {
   
 }
 
-
-// [TODO]
-
-
 void editupdate() {
+  if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
+    if (IsKeyReleased(KEY_ONE)) ModeToggle.active = 0;
+    else if (IsKeyReleased(KEY_TWO)) ModeToggle.active = 1;
+    else if (IsKeyReleased(KEY_THREE)) ModeToggle.active = 2;
+    else if (IsKeyReleased(KEY_FOUR)) ModeToggle.active = 3;
+    else if (IsKeyReleased(KEY_FIVE)) ModeToggle.active = 4;
+    else if (IsKeyReleased(KEY_SIX)) ModeToggle.active = 5;
+    else if (IsKeyReleased(KEY_SEVEN)) ModeToggle.active = 6;
+    else if (IsKeyReleased(KEY_EIGHT)) ModeToggle.active = 7;
+    else if (IsKeyReleased(KEY_NINE)) ModeToggle.active = 8;
+    else if (IsKeyReleased(KEY_ZERO)) ModeToggle.active = 9;
+  }
+
+  
   if (selected_notenode != NULL && ModeToggle.active <= 1 && new_node_selected) {
     new_node_selected = false;
     TypeCombo[0].active = notetype_to_modetoggle(selected_notenode->note.type)-2;
