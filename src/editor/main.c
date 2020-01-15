@@ -1,8 +1,6 @@
 #include "main.h"
 #include "main.gui"
 
-// #pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
-
 void cursor_update() {
   limit_value(playbar.value, 0, get_song_length());
   if (playbar.value != cur) {

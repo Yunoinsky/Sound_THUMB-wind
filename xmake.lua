@@ -9,6 +9,7 @@ target("Editor")
        add_frameworks("CoreVideo", "IOKit", "Cocoa", "GLUT", "OpenGL")
        add_links("raylib")
     elseif is_os("windows") then
+       add_ldflags("-Wl,--subsystem,windows -Wl,-emainCRTStartup")
        add_links("raylib", "gdi32", "winmm")
        add_syslinks("pthread")
     end
