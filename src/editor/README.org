@@ -1,0 +1,52 @@
+* Sound THUMB! wind 管乐之风谱面编辑器用户手册
+** 如何构建
+本软件使用 xmake 构建, 并使用了 raylib 图形库, 因而具有良好的跨平台能力. 以下给出 macOS 与 Windows 下的构建方法, 已在 macOS Catalina (10.15.2) 与 Windows 10 (1903) 上进行了实验. 使用 xmake v2.2.9 及 raylib 2.5
+
+1. 安装 xmake 构建工具
+2. 参考 raylib wiki 构建最新版本的 raylib
+3. 进入到想要构建安装编辑器的目录, 运行以下 shell 代码
+#+BEGIN_SRC sh
+git clone git@github.com:Yunoinsky/Sound_THUMB-wind.git
+#+END_SRC
+或使用 https 协议
+#+BEGIN_SRC sh
+git clone https://github.com/Yunoinsky/Sound_THUMB-wind.git
+#+END_SRC
+您可以随时使用以下命令来跟进项目
+#+BEGIN_SRC sh
+git pull
+#+END_SRC
+
+4. 接下来, 运行以下命令, 建立 lib 文件夹
+#+BEGIN_SRC sh
+cd Sound_THUMB-wind
+mkdir lib
+#+END_SRC
+之后将第二步构建好的 raylib.a 库文件拷贝到 lib 文件夹下
+
+5. 在目录下运行以下命令, 完成构建
+#+BEGIN_SRC sh
+xmake build Editor
+#+END_SRC
+即可以看到 build 目录下的 Editor.exe (macOS 下为 Editor), 双击或运行以下命令即可打开:
+#+BEGIN_SRC sh
+xmake r Editor
+#+END_SRC
+
+PS: window 下如果需要添加图标, 请在项目目录下创建 res 文件夹, 并将需要添加的图标(如 thumb.ico)拷贝到 res 文件夹下.
+在同一目录下创建平文本的资源文件 thumb.rc, 内容为
+#+BEGIN_SRC
+id ICON thumb.ico
+#+END_SRC
+thumb.ico 为图标文件名
+在该目录下运行
+#+BEGIN_SRC sh
+windres thumb.rc -o thumb.o
+#+END_SRC
+之后再进行第五步的构建即可
+如果需要进行linux的构建, 请对需要添加的库进行一些修改, 参考 [[https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux][raylib wiki]] 
+
+PS2: 目前尚未添加对于 windows 窗口的支持, 因而在 win 下运行时会有默认的命令行弹出, 如果想要消除命令行, 可以在 Editor.exe 所在的目录下创建启动用的 vbs 文件, 内容如下:
+#+BEGIN_SRC sh
+CreateObject("Wscript.Shell").run "Editor.exe", vbhide
+#+END_SRC
