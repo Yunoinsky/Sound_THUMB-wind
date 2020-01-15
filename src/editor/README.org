@@ -46,11 +46,8 @@ windres thumb.rc -o thumb.o
 之后再进行第五步的构建即可
 如果需要进行linux的构建, 请对需要添加的库进行一些修改, 参考 [[https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux][raylib wiki]] 
 
-PS2: 目前尚未添加对于 windows 窗口的支持, 因而在 win 下运行时会有默认的命令行弹出, 如果想要消除命令行, 可以在 Editor.exe 所在的目录下创建启动用的 vbs 文件, 内容如下:
-#+BEGIN_SRC sh
-CreateObject("Wscript.Shell").run "Editor.exe", vbhide
-#+END_SRC
-之后再通过双击 vbs 文件打开即可
+PS2: macOS 下可以使用 Application Bundle 机制进行打包, 乐谱文件会存储在 Shared 下的 SoundTHUMB 目录中, 之后会对打包过程进行完善
+
 
 ** 使用手册
 *** 音频文件准备

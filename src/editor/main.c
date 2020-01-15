@@ -384,11 +384,12 @@ void draw_score() {
     }
   }
 
-#ifdef _WIN32
+  //#ifdef _WIN32
   BeginScissorMode(scrollscore.bounds.x, scrollscore.bounds.y, scrollscore.bounds.width, scrollscore.bounds.height);
-#elif __APPLE__
-  BeginScissorMode(scrollscore.bounds.x * 2, scrollscore.bounds.y * 2 -  screenHeight, scrollscore.bounds.width * 2, scrollscore.bounds.height * 2);    // a trick to avoid scissor coordinate bug on high DPI
-#endif
+  //#elif __APPLE__
+  //  BeginScissorMode(scrollscore.bounds.x * 2, scrollscore.bounds.y * 2 -  screenHeight, scrollscore.bounds.width * 2, scrollscore.bounds.height * 2); // do not need this line in application bundle
+  //#endif
+  
   notes_draw();
   mousedraw();
   EndScissorMode();
@@ -511,7 +512,13 @@ void game_update() {
 
     if (!(state & STATE_PLAY)) {
       if (ModeToggle.active == 9) {
+#ifdef __APPLE__
+#include <sys/stat.h>
+	mkdir("/Users/Shared/SoundTHUMB", 0777);
+	write_score_file(TextFormat("/Users/Shared/SoundTHUMB/%s.wind", DragFileWindow.text));
+#elif _WIN32
 	write_score_file(TextFormat("%s.wind", DragFileWindow.text));
+#endif
 	ModeToggle.active = 0;
 	selected_notenode = NULL;
 	selected_notetrack = -1;
@@ -543,9 +550,11 @@ void game_update() {
 	      sound_load_song(droppedFilenames[i]);
 
 	      strcpy(DragFileWindow.text, TextFormat("%.20s", GetFileNameWithoutExt(droppedFilenames[i])));
-
+#ifdef __APPLE__
+	      read_score_file(TextFormat("/Users/Shared/SoundTHUMB/%s.wind", DragFileWindow.text));
+#elif _WIN32
 	      read_score_file(TextFormat("%s.wind", DragFileWindow.text));
-
+#endif
 	      state |= STATE_FILELOADED;
 	      TimeSpinner[0].sequencelength = get_song_length();
 	      playbar.max = get_song_length();

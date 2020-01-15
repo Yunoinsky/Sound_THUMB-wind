@@ -11,8 +11,11 @@ target("Editor")
     elseif is_os("windows") then
        add_ldflags("-Wl,--subsystem,windows -Wl,-emainCRTStartup")
        add_links("raylib", "gdi32", "winmm")
+       add_files("./res/thumb.o")
        add_syslinks("pthread")
     end
     add_includedirs("src/scoreio", "src/editor", "src/others", "src/audio")
     add_files("src/scoreio/score.c","src/editor/main.c", "src/audio/sound.c")
-    add_files("./res/thumb.o")
+    
+
+    
