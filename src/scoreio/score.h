@@ -90,6 +90,7 @@ NoteNode* create_note_node(Note note, NoteNode* next);
 #define MIN_NOTE_DIST 120
 bool insert_note(unsigned char track, Note note, bool inundo);
 
+bool is_end_of_fun(unsigned char ptype, unsigned char ntype);
 NoteNode* get_notenode(unsigned char track, unsigned int time);
 
 bool remove_note(unsigned char track, unsigned int time, bool inundo);

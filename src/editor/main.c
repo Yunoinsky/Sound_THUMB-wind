@@ -31,13 +31,13 @@ void playbutton_action() {
     playbar.value -= jumpDistance;
   }
   if (IsKeyDown(KEY_Q)) {
-    playbar.value -= jumpDistance/10;
+    playbar.value -= jumpDistance/20;
   }
   if (IsKeyDown(KEY_D)) {
     playbar.value += jumpDistance;
   }
   if (IsKeyDown(KEY_E)) {
-    playbar.value += jumpDistance/10;
+    playbar.value += jumpDistance/20;
   }
   if (CheckCollisionPointRec(mousePosition, scrollscore.bounds) || CheckCollisionPointRec(mousePosition, playbar.bounds)) {
     playbar.value += GetMouseWheelMove() * jumpDistance;
@@ -109,10 +109,7 @@ Rectangle get_note_rect(Note note, unsigned char track) {
   // the height of note is 5 pixels
   int coor = ((int)note.time - cur) / CHUNK_SIZE / scrollscore.resolution;
   coor = scrollscore.bounds.y + scrollscore.bounds.height/2 - coor;
-
-  int bottom = yumin(coor, scrollscore.bounds.y + scrollscore.bounds.height);
-  int top = yumax(coor-10, scrollscore.bounds.y);
-  return (Rectangle){  scrollscore.bounds.x + track * scrollscore.bounds.width / 6, top, scrollscore.bounds.width/6, bottom - top };
+  return (Rectangle){  scrollscore.bounds.x + track * scrollscore.bounds.width / 6, coor - 10, scrollscore.bounds.width/6, 10 };
 }
 
 void DrawSingleNoteEx(Note note, unsigned char track, bool hl) {
@@ -129,7 +126,11 @@ void DrawSingleNoteEx(Note note, unsigned char track, bool hl) {
   default: break;
   }
   DrawRectangleRounded(get_note_rect(note, track), 1.0, 8, Fade(color, alpha));
-  if (hl) DrawRectangleRoundedLines(get_note_rect(note, track), 1.0, 8, 2, Fade(RAYWHITE, 0.9f));
+  if (hl) {
+    DrawRectangleRoundedLines(get_note_rect(note, track), 1.0, 8, 2, Fade(RAYWHITE, 0.9f));
+  } else {
+    DrawRectangleRoundedLines(get_note_rect(note, track), 1.0, 8, 2, Fade(LIGHTGRAY, 0.5f));
+  }
 }
 
 void UpdateandDrawSingleNote(NoteNode* node, unsigned char track) {
@@ -154,21 +155,34 @@ void UpdateandDrawSingleNote(NoteNode* node, unsigned char track) {
 void DrawDragLinkRoad(NoteNode* prev, NoteNode* next, unsigned char trackprev, unsigned char tracknext) {
   Rectangle rp = get_note_rect(prev->note, trackprev);
   Rectangle rn = get_note_rect(next->note, tracknext);
-
   DrawTriangle((Vector2){ rp.x, rp.y}, (Vector2){ rp.x+rp.width, rp.y }, (Vector2){ rn.x, rn.y }, Fade(PINK, 0.3f));
   DrawTriangle((Vector2){ rn.x, rn.y}, (Vector2){ rp.x+rp.width, rp.y }, (Vector2){ rn.x+rn.width, rn.y }, Fade(PINK, 0.3f));
 }
 
 void DrawSlipRoad(NoteNode* node, unsigned char track) {
-  return;
+  Rectangle r = get_note_rect(node->note, track);
+  switch (node->note.direction) {
+  case NOTE_LEFT: DrawTriangle((Vector2){ r.x - r.width / 2, r.y + r.height / 2 }, (Vector2){ r.x, r.y + r.height}, (Vector2){ r.x, r.y }, Fade(PINK, 0.5f)); break;
+  case NOTE_MEDIUM: DrawTriangle((Vector2){ r.x, r.y }, (Vector2){ r.x + r.width, r.y }, (Vector2){ r.x + r.width/2, r.y - r.height}, Fade(PINK, 0.5f)); break;
+  case NOTE_RIGHT: DrawTriangle((Vector2){ r.x + r.width, r.y }, (Vector2){ r.x + r.width, r.y + r.height}, (Vector2){ r.x + r.width/2*3, r.y + r.height/2 }, Fade(PINK, 0.5f)); break;
+  default: break;
+  }
 }
 
 void DrawHoldRoad(NoteNode * prev, NoteNode * next, unsigned char track) {
-  return;
+  Rectangle rp = get_note_rect(prev->note, track);
+  Rectangle rn = get_note_rect(next->note, track);
+  DrawRectangle(rn.x, rn.y, rn.width, rp.y-rn.y, Fade(BROWN, 0.8f));
 }
 
 void DrawFunctionRoad(NoteNode * prev, NoteNode * next, unsigned char track) {
-  return;
+  Rectangle rp = get_note_rect(prev->note, track);
+  Rectangle rn = get_note_rect(next->note, track);
+  switch(prev->note.direction) {
+  case NOTE_DISABLE:  DrawRectangle(rn.x, rn.y, rn.width, rp.y-rn.y, Fade(GRAY, 0.8f)); break;
+  case NOTE_CADENZA:  DrawRectangle(rn.x, rn.y, rn.width, rp.y-rn.y, Fade(GOLD, 0.2f)); break;
+  default: break;
+  }
 }
 
 void notes_draw() {
@@ -197,10 +211,29 @@ void notes_draw() {
       draw_endnote[i] = notecur;
     }
 
+    unsigned char trackcur;
+    NoteNode * dragcur;
+    for (i = 0; i < TRACK_NUM; i++) {
+      notecur = Notelists[i];
+      while (notecur != NULL && notecur != draw_endnote[i]) {
+	if (notecur->note.type == FUN_NODE &&
+	    (notecur->note.direction == NOTE_DISABLE ||
+	     notecur->note.direction == NOTE_CADENZA)) {
+	  dragcur = notecur->next;
+	  while (dragcur != NULL) {
+	    if (dragcur->note.type == FUN_NODE && (is_end_of_fun(notecur->note.direction, dragcur->note.direction))) {
+	      DrawFunctionRoad(notecur, dragcur, i);
+	      break;
+	    }
+	    dragcur = dragcur->next;
+	  }
+	}
+	notecur = notecur->next;
+      }
+    }
+    
     for (i = 0; i < TRACK_NUM; i++) {
       notecur = draw_prevstartnote[i];
-      unsigned char trackcur;
-      NoteNode * dragcur;
       while (notecur != NULL && notecur != draw_endnote[i]) {
 	// draw background for drag note
 	switch (notecur->note.type) {
@@ -211,18 +244,6 @@ void notes_draw() {
 	case SHD_NOTE: {
 	  if (notecur->next != NULL && notecur->next->note.type == END_NOTE) {
 	    DrawHoldRoad(notecur, notecur->next, i);
-	  }
-	  break;
-	}
-	case FUN_NODE: {
-	  if (notecur->note.type == NOTE_DISABLE || notecur->note.type == NOTE_CADENZA) {
-	    dragcur = notecur->next;
-	    while (dragcur != NULL) {
-	      if (dragcur->note.type == notecur->note.type+1) {
-		DrawFunctionRoad(notecur, dragcur, i);
-	      }
-	      dragcur = dragcur->next;
-	    }
 	  }
 	  break;
 	}
@@ -250,10 +271,8 @@ void notes_draw() {
     }
     for (i = 0; i < TRACK_NUM; i++) {
       notecur = draw_prevstartnote[i];
-
       while (notecur != NULL && notecur != draw_endnote[i]) {
-
-	UpdateandDrawSingleNote(notecur, i);
+	if (notecur->note.time != 0) UpdateandDrawSingleNote(notecur, i);
 	notecur = notecur->next;
       }
     }
@@ -370,7 +389,7 @@ void draw_score() {
 #ifdef _WIN32
   BeginScissorMode(scrollscore.bounds.x, scrollscore.bounds.y, scrollscore.bounds.width, scrollscore.bounds.height);
 #elif __APPLE__
-  BeginScissorMode(scrollscore.bounds.x * 2, scrollscore.bounds.y * 2 -  screenHeight, scrollscore.bounds.width * 2, scrollscore.bounds.height * 2);    // a trick to avoid scissor bug on high DPI
+  BeginScissorMode(scrollscore.bounds.x * 2, scrollscore.bounds.y * 2 -  screenHeight, scrollscore.bounds.width * 2, scrollscore.bounds.height * 2);    // a trick to avoid scissor coordinate bug on high DPI
 #endif
   notes_draw();
   mousedraw();
@@ -388,7 +407,9 @@ void draw_score() {
 	     LIGHTGRAY);
   }
   // [TODO] Score information 
-  DrawText(FormatText("%d, %05.1f", cur/1000, rms_value), 25, 25, 12, LIGHTGRAY);
+  DrawText(FormatText("play cursor: %.2f s", cur/1000.0f), 25, 25, 12, LIGHTGRAY);
+  DrawText(FormatText("RMS: %05.1f", 100 * get_rms(rms_start+scrollscore.bounds.height/2*scrollscore.resolution)), 200, 25, 12, LIGHTGRAY);
+  
   /*** score end ***/
   
 }
@@ -406,8 +427,6 @@ void editupdate() {
     else if (IsKeyReleased(KEY_NINE)) ModeToggle.active = 8;
     else if (IsKeyReleased(KEY_ZERO)) ModeToggle.active = 9;
   }
-
-  
   if (selected_notenode != NULL && ModeToggle.active <= 1 && new_node_selected) {
     new_node_selected = false;
     TypeCombo[0].active = notetype_to_modetoggle(selected_notenode->note.type)-2;
@@ -417,9 +436,8 @@ void editupdate() {
   }
       // in select mode
   if (ModeToggle.active == 0 && selected_notenode != NULL) {
-    if (Buttons[0].value == true) {   // Confirm
+    if (Buttons[0].value == true || IsKeyReleased(KEY_ENTER)) {   // Confirm
       remove_note(selected_notetrack, selected_notenode->note.time, false);
-     
       switch (TypeCombo[0].active) {
       case 0: sflag = insert_note(TimeSpinner[1].value, create_click_note(TimeSpinner[0].value), false); break;
       case 1: sflag = insert_note(TimeSpinner[1].value, create_slip_node(TimeSpinner[0].value, TypeCombo[1].active), false); break;
@@ -436,8 +454,7 @@ void editupdate() {
     } else if (Buttons[1].value == true) { // Cancel
 	selected_notenode = NULL;
 	new_node_selected = false;
-	
-    } else if (Buttons[2].value == true) {
+    } else if (Buttons[2].value == true || IsKeyReleased(KEY_BACKSPACE)) { // delete
       remove_note(selected_notetrack, selected_notenode->note.time, false);
       selected_notetrack = -1;
       selected_notenode = NULL;
@@ -487,6 +504,9 @@ void game_init() {
 
 void game_update() {
   mousePosition = GetMousePosition();
+  if (mouseToggle && ModeToggle.active > 1 && CheckCollisionPointRec(mousePosition, scrollscore.bounds)) mousePosition.y = scrollscore.bounds.y + scrollscore.bounds.height/2;
+  if (IsKeyReleased(KEY_T)) mouseToggle ^= true;
+  
   if (state & STATE_FILEOPENED) {
     cursor_update();
     playbutton_action();
@@ -495,6 +515,8 @@ void game_update() {
       if (ModeToggle.active == 9) {
 	write_score_file(TextFormat("%s.wind", DragFileWindow.text));
 	ModeToggle.active = 0;
+	selected_notenode = NULL;
+	selected_notetrack = -1;
       } else {
 	editupdate();
       }

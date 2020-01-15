@@ -177,6 +177,12 @@ bool insert_note(unsigned char track, Note note, bool inundo) {
   return false;
 }
 
+bool is_end_of_fun(unsigned char ptype, unsigned char ntype) {
+  if (ptype == NOTE_DISABLE && ntype == NOTE_ENABLE) return true;
+  else if (ptype == NOTE_CADENZA && ntype == NOTE_ENDCADENZA) return true;
+  else return false;
+}
+
 NoteNode* get_notenode(unsigned char track, unsigned int time) {
   NoteNode* cur = Notelists[track];
   while(cur->next != NULL) {

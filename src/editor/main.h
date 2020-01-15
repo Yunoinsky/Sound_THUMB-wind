@@ -24,7 +24,10 @@
 bool close;
 
 unsigned char state = 0;
+bool mouseToggle = false;
 Vector2 mousePosition;
+
+
 int cur;
 
 
